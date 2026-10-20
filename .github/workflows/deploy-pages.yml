@@ -9,9 +9,8 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
+# Only the deploy job is in the "pages" concurrency group: one deploy at a time, never cancelled midway.
+# A run waiting in a group is cancelled when a newer one joins it, so pull request checks stay out of it.
 
 jobs:
   build:
@@ -57,6 +56,9 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write

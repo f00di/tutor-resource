@@ -383,6 +383,35 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; flex: n
 .welcome ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 8px; font-size: 13px; list-style: decimal; }
 .welcome li::marker { color: var(--primary); font-weight: 700; }
 
+/* First visit on a device (components/first-run.tsx): one card in the middle of the page, then the app. */
+.first-run { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
+.first-run-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: max(18px, env(safe-area-inset-top)) 24px 18px; }
+.first-run-bar .brand { padding: 0; }
+.first-run-tools { display: flex; gap: 6px; }
+.first-run-main { display: grid; place-items: center; padding: 8px 24px 56px; }
+.first-run-main:focus { outline: none; }
+.first-run-card { width: 100%; max-width: 580px; padding: 38px 38px 34px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); box-shadow: var(--shadow-soft); }
+.first-run h1 { font-size: 30px; font-weight: 800; line-height: 1.2; }
+.first-run-lead { margin: 10px 0 0; color: var(--muted-foreground); font-size: 15px; line-height: 1.6; }
+.first-run-points { margin: 26px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+.first-run-points li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+.first-run-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--secondary); color: var(--primary); }
+.first-run-icon svg { width: 20px; height: 20px; }
+.first-run-points h2 { font-size: 15px; font-weight: 700; line-height: 1.4; }
+.first-run-points p { margin: 4px 0 0; color: var(--muted-foreground); line-height: 1.65; }
+.first-run-points a { font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.first-run-points a svg { width: 13px; height: 13px; margin-inline-start: 4px; vertical-align: -1px; }
+.first-run-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.first-run-actions .btn { height: 44px; padding-inline: 20px; font-size: 14px; }
+/* Phones: the page is the card, and the buttons are full width (thumb reach). */
+@media (max-width: 640px) {
+  .first-run-bar { padding-inline: 16px; }
+  .first-run-main { place-items: start stretch; padding: 4px 16px calc(32px + env(safe-area-inset-bottom)); }
+  .first-run-card { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+  .first-run h1 { font-size: 26px; }
+  .first-run-actions { flex-direction: column; }
+}
+
 .settings-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .settings-grid { display: grid; gap: 16px; max-width: 760px; }
 

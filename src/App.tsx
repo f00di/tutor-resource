@@ -1,7 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 
 import { DialogHost } from "./components/dialog-host";
 import { ErrorBoundary, ErrorNotice } from "./components/error-boundary";
+import { FirstRun, hasBeenWelcomed } from "./components/first-run";
 import { Shell } from "./components/shell";
 import { I18nProvider, type Lang } from "./lib/i18n";
 import { hrefFor, useRoute, type Route } from "./lib/router";
@@ -47,15 +48,26 @@ function Page({ route }: { route: Route }) {
 export function App({ initialLang }: { initialLang: Lang }) {
   const settings = useSettings();
   const route = useRoute();
+  // The welcome screen comes first on a new device, once; then the app opens on the linked page.
+  const [welcomed, setWelcomed] = useState(hasBeenWelcomed);
   return (
     <I18nProvider initialLang={initialLang} hour12={settings.hour12}>
       <DialogHost>
-        <Shell route={route}>
-          {/* A page that fails shows what happened in place of the page; moving to another page starts fresh. */}
-          <ErrorBoundary key={hrefFor(route)} scope="page">
-            <Page route={route} />
-          </ErrorBoundary>
-        </Shell>
+        {welcomed ? (
+          <Shell route={route}>
+            {/* A page that fails shows what happened in place of the page; moving to another page starts fresh. */}
+            <ErrorBoundary key={hrefFor(route)} scope="page">
+              <Page route={route} />
+            </ErrorBoundary>
+          </Shell>
+        ) : (
+          <FirstRun
+            onDone={() => {
+              setWelcomed(true);
+              window.scrollTo({ top: 0 });
+            }}
+          />
+        )}
         {UpdateToast && (
           <ErrorBoundary scope="silent">
             <Suspense fallback={null}>

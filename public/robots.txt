@@ -1,0 +1,5 @@
+# Tutorcat Desk is unlisted: it's for tutors on Tutorcat, who get the link from Tutorcat.
+# Crawlers only read robots.txt at the root of a domain, so on f00di.github.io/tutor-resource/
+# the noindex meta tag in index.html is what keeps it out of search results (docs/hosting.md).
+User-agent: *
+Disallow: /

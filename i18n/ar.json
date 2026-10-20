@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Modern Standard Arabic for Gulf tutors and families, using Tutorcat's glossary (tutorcat/docs/i18n-glossary.md). Not yet reviewed by a native speaker; start with lowConfidence.",
-    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "paper.billTo", "paper.forStudent", "today.afternoon", "msg.summaryIntro", "schedule.dragHint", "nav.forward", "error.updateBody"]
+    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "paper.billTo", "paper.forStudent", "today.afternoon", "msg.summaryIntro", "schedule.dragHint", "nav.forward", "error.updateBody", "firstRun.free", "firstRun.apply"]
   },
 
   "common.close": "إغلاق",
@@ -11,6 +11,7 @@
   "common.delete": "حذف",
   "common.edit": "تعديل",
   "common.sample": "مثال",
+  "common.newTab": "(يُفتح في علامة تبويب جديدة)",
 
   "app.home": "الصفحة الرئيسية لـ Tutorcat Desk",
   "app.onDevice": "بياناتك تبقى على هذا الجهاز.",
@@ -432,12 +433,21 @@
   "today.blackouts": "أوقات محجوبة خلال أسبوعين",
   "today.todayWord": "اليوم",
 
-  "welcome.title": "مرحبًا بك في Tutorcat Desk",
+  "welcome.title": "لنبدأ",
   "welcome.body": "جدولك وأوقاتك المحجوبة وملاحظات دروسك وفواتيرك في مكان واحد. كل شيء يبقى على هذا الجهاز، ولا يُرسل أي شيء إلى Tutorcat أو إلى أي جهة أخرى.",
   "welcome.step1": "أضف اسمك وتفاصيل الدفع في الإعدادات (تظهر في فواتيرك).",
   "welcome.step2": "أضف طلابك مع مناطقهم الزمنية وأسعارك.",
   "welcome.step3": "احجز الدروس (مرة واحدة أو أسبوعيًا) واحجب الأوقات التي لا تكون فيها متاحًا.",
   "welcome.step4": "بعد كل درس، دوّن ما تمت تغطيته. تُنشأ الفواتير تلقائيًا من دروسك.",
+  "firstRun.title": "مرحبًا بك في Tutorcat Desk",
+  "firstRun.lead": "جدولك وأوقاتك المحجوبة وملاحظات دروسك وفواتيرك في مكان واحد.",
+  "firstRun.freeTitle": "مجاني للمدرّسين في Tutorcat",
+  "firstRun.free": "يستخدم المدرّسون المدرجون في Tutorcat تطبيق Tutorcat Desk مجانًا.",
+  "firstRun.notListed": "لست مدرجًا بعد؟",
+  "firstRun.apply": "قدّم طلبك في صفحة «للمدرّسين» على Tutorcat",
+  "firstRun.dataTitle": "بياناتك تبقى على هذا الجهاز",
+  "firstRun.data": "لا يوجد حساب، ولا يُرسل أي شيء تكتبه إلى Tutorcat أو إلى أي جهة أخرى. أنشئ نسخة احتياطية من الإعدادات بين حين وآخر: ملف النسخة الاحتياطية يعيد كل شيء إذا مُسحت بيانات هذا المتصفح، أو على حاسوب جديد.",
+  "firstRun.start": "ابدأ",
 
   "sample.load": "جرّب ببيانات تجريبية",
   "sample.loading": "جارٍ إضافة البيانات التجريبية…",

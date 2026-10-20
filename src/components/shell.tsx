@@ -17,7 +17,8 @@ const NAV: Array<{ name: RouteName; key: string; short: string; icon: ReactNode;
 
 const current = (route: Route, item: (typeof NAV)[number]) => (route.name === item.name || item.also?.includes(route.name) ? "page" : undefined);
 
-function Tools() {
+/** Language and theme switches (also on the first-run screen). */
+export function Tools() {
   const { t, lang, setLang } = useI18n();
   const { dark, toggle } = useTheme();
   return (

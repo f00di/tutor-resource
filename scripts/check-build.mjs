@@ -25,6 +25,12 @@ check(html.includes(`href="${base}favicon.svg"`), `the favicon is under ${base}`
 check(html.includes('<script>') && html.includes("tutorcat-desk.theme"), "the boot script (theme and language before first paint) is inline");
 check(/<style>html\{background:#[0-9a-f]{6}\}html\.dark\{background:#[0-9a-f]{6}\}<\/style>/.test(html), "the page colour is inline, so opening the app never flashes");
 
+// Unlisted: search engines are told not to index the app or follow its links, and there's no sitemap.
+check(/<meta name="robots" content="noindex, nofollow"\s*\/?>/.test(html), 'index.html has <meta name="robots" content="noindex, nofollow">');
+const robots = existsSync(join(dist, "robots.txt")) ? readFileSync(join(dist, "robots.txt"), "utf8") : "";
+check(/^User-agent: \*\s*$/m.test(robots) && /^Disallow: \/\s*$/m.test(robots), "robots.txt disallows everything");
+check(!files.some((file) => /sitemap/i.test(file)), "no sitemap ships");
+
 const manifest = JSON.parse(readFileSync(join(dist, "manifest.webmanifest"), "utf8"));
 check(manifest.start_url === base && manifest.scope === base, "the manifest's start_url and scope are the base path");
 check(manifest.display === "standalone", "the app opens in its own window when installed");
