@@ -1,6 +1,6 @@
 // A small hash router (#/schedule, #/students/<id>): works on GitHub Pages and offline with no server
 // rules, and the installed app always opens on the same page.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type RouteName = "today" | "schedule" | "blackouts" | "students" | "student" | "invoices" | "invoice" | "settings";
 export interface Route {
@@ -22,19 +22,29 @@ export const hrefFor = (route: Route) => {
   return route.name === "today" ? "#/" : `#/${route.name}`;
 };
 
+/** Like clicking a link: a new history entry, so Back returns here. */
 export function navigate(route: Route) {
   window.location.hash = hrefFor(route);
 }
 
 export function useRoute(): Route {
   const [route, setRoute] = useState(() => parseHash(window.location.hash));
+  const shown = useRef(route);
   useEffect(() => {
+    // Links and navigate() fire hashchange; Back and Forward fire popstate (and usually hashchange too).
     const update = () => {
-      setRoute(parseHash(window.location.hash));
+      const next = parseHash(window.location.hash);
+      if (hrefFor(next) === hrefFor(shown.current)) return;
+      shown.current = next;
+      setRoute(next);
       window.scrollTo({ top: 0 });
     };
     window.addEventListener("hashchange", update);
-    return () => window.removeEventListener("hashchange", update);
+    window.addEventListener("popstate", update);
+    return () => {
+      window.removeEventListener("hashchange", update);
+      window.removeEventListener("popstate", update);
+    };
   }, []);
   return route;
 }

@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { hrefFor, type Route, type RouteName } from "@/lib/router";
 import { useTheme } from "@/lib/theme";
 import { Logo } from "./logo";
+import { NavButtons, useNavShortcuts } from "./nav-buttons";
 
 const NAV: Array<{ name: RouteName; key: string; short: string; icon: ReactNode; also?: RouteName[] }> = [
   { name: "today", key: "nav.today", short: "nav.todayShort", icon: <LayoutDashboard /> },
@@ -34,6 +35,7 @@ function Tools() {
 /** Sidebar on laptops; a top bar and bottom tabs on phones and small tablets (styles.css). */
 export function Shell({ route, children }: { route: Route; children: ReactNode }) {
   const { t } = useI18n();
+  useNavShortcuts();
   return (
     <div className="app">
       <a className="skip-link" href="#main" onClick={(event) => {
@@ -43,10 +45,13 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
         {t("nav.skip")}
       </a>
       <aside className="sidebar">
-        <a className="brand" href="#/" aria-label={t("app.home")}>
-          <Logo className="logo" />
-          <span className="brand-tag">Desk</span>
-        </a>
+        <div className="brand-row">
+          <a className="brand" href="#/" aria-label={t("app.home")}>
+            <Logo className="logo" />
+            <span className="brand-tag">Desk</span>
+          </a>
+          <NavButtons />
+        </div>
         <nav className="nav" aria-label={t("nav.label")}>
           {NAV.map((item) => (
             <a key={item.name} className="nav-item" href={hrefFor({ name: item.name })} aria-current={current(route, item)}>
@@ -70,10 +75,13 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
         </div>
       </aside>
       <header className="topbar">
-        <a className="brand" href="#/" aria-label={t("app.home")}>
-          <Logo className="logo" />
-          <span className="brand-tag">Desk</span>
-        </a>
+        <div className="topbar-start">
+          <NavButtons />
+          <a className="brand" href="#/" aria-label={t("app.home")}>
+            <Logo className="logo" />
+            <span className="brand-tag">Desk</span>
+          </a>
+        </div>
         <div className="topbar-tools">
           <Tools />
           <a className="btn btn-ghost btn-icon btn-sm" href={hrefFor({ name: "settings" })} aria-label={t("nav.settings")} aria-current={route.name === "settings" ? "page" : undefined}>

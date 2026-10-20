@@ -77,4 +77,4 @@ export function nextLesson(lessons: Lesson[], studentId: string, after: number):
 }
 
 /** Topics planned for a lesson that weren't ticked off or moved on. */
-export const unfinishedTopics = (lesson: Lesson) => lesson.plan.filter((item) => !item.done && !item.movedOn && item.text.trim());
+export const unfinishedTopics = (lesson: Pick<Lesson, "plan">) => lesson.plan.filter((item) => !item.done && !item.movedOn && item.text.trim());

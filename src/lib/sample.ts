@@ -7,6 +7,11 @@ import type { Translator } from "./i18n";
 import { addDays, combine, startOfWeek, todayKey } from "./time";
 
 export async function loadSampleData(tr: Translator): Promise<void> {
+  // One transaction, so the pages show all of it at once instead of filling in piece by piece.
+  await db.transaction("rw", DATA_TABLES.map((name) => db.table(name)), () => addSampleRecords(tr));
+}
+
+async function addSampleRecords(tr: Translator): Promise<void> {
   const { t } = tr;
   const sara = await saveStudent({
     name: "Sara A.",
