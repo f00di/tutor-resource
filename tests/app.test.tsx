@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import "fake-indexeddb/auto";
 
-import { act, render, screen } from "@testing-library/react";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { act, cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { App } from "@/App";
 import { TUTORCAT_FOR_TUTORS, WELCOMED_STORAGE_KEY } from "@/components/first-run";
@@ -26,6 +26,8 @@ beforeEach(async () => {
   window.localStorage.clear();
   await Promise.all([...DATA_TABLES.map((name) => db.table(name).clear()), db.meta.clear()]);
 });
+
+afterEach(cleanup);
 
 const welcomed = () => window.localStorage.setItem(WELCOMED_STORAGE_KEY, "1");
 
