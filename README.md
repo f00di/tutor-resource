@@ -20,4 +20,4 @@ npm test           # vitest: time zones, money, packages, blackouts, storage, tr
 npm run typecheck
 npm run build && npm run test:build
 ```
-Pushing `main` deploys to GitHub Pages (`.github/workflows/deploy-pages.yml`). See `CLAUDE.md` for how it's put together.
+Pushing `main` deploys to GitHub Pages (`.github/workflows/deploy-pages.yml`; the repo's Settings → Pages → Source must be **GitHub Actions**). The app is unlisted (noindex, `robots.txt`, no sitemap). See `docs/hosting.md` for hosting and `CLAUDE.md` for how it's put together.
