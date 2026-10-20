@@ -8,8 +8,9 @@ import { BackupError, backupCounts, deleteAllData, parseBackup, restoreBackup, s
 import { db } from "@/lib/db";
 import { useI18n } from "@/lib/i18n";
 import { installHint, useInstall } from "@/lib/install";
+import { navigate } from "@/lib/router";
 import { loadSampleData, removeSampleData } from "@/lib/sample";
-import { normaliseSettings, saveSettings, SETTINGS_KEY, useLastBackup } from "@/lib/settings";
+import { saveSettings, useLastBackup, useLoadedSettings } from "@/lib/settings";
 import { isTimeKey } from "@/lib/time";
 import { setThemeChoice, useTheme, type ThemeChoice } from "@/lib/theme";
 import type { Mode, Settings } from "@/lib/types";
@@ -18,9 +19,9 @@ import { usePageTitle } from "./page-title";
 export function SettingsPage() {
   const { t } = useI18n();
   usePageTitle(t("nav.settings"));
-  const row = useLiveQuery(async () => (await db.meta.get(SETTINGS_KEY)) ?? null, []);
-  if (row === undefined) return null;
-  return <SettingsForm initial={normaliseSettings(row?.value)} />;
+  const settings = useLoadedSettings();
+  if (settings === undefined) return null;
+  return <SettingsForm initial={settings} />;
 }
 
 function SettingsForm({ initial }: { initial: Settings }) {
@@ -33,6 +34,7 @@ function SettingsForm({ initial }: { initial: Settings }) {
   const hasSample = useLiveQuery(async () => (await db.students.filter((student) => student.sample === true).count()) > 0, [], false);
   const [draft, setDraft] = useState(initial);
   const [persisted, setPersisted] = useState<boolean | null>(null);
+  const [sampleBusy, setSampleBusy] = useState(false);
   const pending = useRef<Partial<Settings>>({});
   const timer = useRef<number | undefined>(undefined);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -76,11 +78,32 @@ function SettingsForm({ initial }: { initial: Settings }) {
       if (!ok) return;
       await restoreBackup(parsed);
       dialogs.toast(t("backup.restored"));
-      window.location.hash = "#/";
+      navigate({ name: "today" });
     } catch (error) {
       dialogs.toast(error instanceof BackupError ? t(`backup.error.${error.reason}`) : t("backup.error.damaged"));
     } finally {
       if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  const loadSample = async () => {
+    setSampleBusy(true);
+    try {
+      await loadSampleData(i18n);
+      dialogs.toast(t("sample.loaded"));
+    } finally {
+      setSampleBusy(false);
+    }
+  };
+  // Asks first, as on the Today page: it deletes anything made for the sample students too.
+  const removeSample = async () => {
+    if (!(await dialogs.confirm({ title: t("sample.removeTitle"), body: t("sample.removeBody"), confirmLabel: t("sample.remove"), danger: true }))) return;
+    setSampleBusy(true);
+    try {
+      await removeSampleData();
+      dialogs.toast(t("sample.removed"));
+    } finally {
+      setSampleBusy(false);
     }
   };
 
@@ -89,7 +112,7 @@ function SettingsForm({ initial }: { initial: Settings }) {
     if (!first) return;
     await deleteAllData();
     dialogs.toast(t("data.deleted"));
-    window.location.hash = "#/";
+    navigate({ name: "today" });
   };
 
   const hint = installHint();
@@ -328,14 +351,14 @@ function SettingsForm({ initial }: { initial: Settings }) {
           <hr className="divider" style={{ margin: "18px 0" }} />
           <div className="page-actions">
             {hasSample ? (
-              <button type="button" className="btn btn-outline" onClick={() => void removeSampleData().then(() => dialogs.toast(t("sample.removed")))}>
+              <button type="button" className="btn btn-outline" onClick={removeSample} disabled={sampleBusy}>
                 <Sparkles />
                 {t("sample.remove")}
               </button>
             ) : (
-              <button type="button" className="btn btn-outline" onClick={() => void loadSampleData(i18n).then(() => dialogs.toast(t("sample.loaded")))}>
+              <button type="button" className="btn btn-outline" onClick={loadSample} disabled={sampleBusy} aria-busy={sampleBusy}>
                 <Sparkles />
-                {t("sample.load")}
+                {sampleBusy ? t("sample.loading") : t("sample.load")}
               </button>
             )}
             <button type="button" className="btn btn-danger" onClick={wipe}>

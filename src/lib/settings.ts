@@ -90,6 +90,12 @@ export function useSettings(): Settings {
   return normaliseSettings(row?.value);
 }
 
+/** Live settings, but undefined until the saved ones are read: for forms that start from them (lesson length, rate). */
+export function useLoadedSettings(): Settings | undefined {
+  const row = useLiveQuery(async () => (await db.meta.get(SETTINGS_KEY)) ?? null, []);
+  return row === undefined ? undefined : normaliseSettings(row?.value);
+}
+
 export function useLastBackup(): string | null | undefined {
   const row = useLiveQuery(() => db.meta.get(LAST_BACKUP_KEY), []);
   return row === undefined ? undefined : typeof row?.value === "string" ? row.value : null;

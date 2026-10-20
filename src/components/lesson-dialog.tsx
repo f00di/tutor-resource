@@ -10,9 +10,9 @@ import { useI18n, useTranslator } from "@/lib/i18n";
 import { endMs, findClashes, minutesOf, nextLesson, startMs, unfinishedTopics } from "@/lib/lessons";
 import { reminderMessage, summaryMessage, whatsappLink } from "@/lib/messages";
 import { navigate } from "@/lib/router";
-import { useSettings } from "@/lib/settings";
+import { useLoadedSettings } from "@/lib/settings";
 import { addDays, combine, dateKey, deviceZone, HOUR, isDateKey, isTimeKey, isValidZone, MINUTE, timeKey, weeklySeries, zonePlace } from "@/lib/time";
-import type { Lesson, LessonStatus, Mode, PlanItem, Student } from "@/lib/types";
+import type { Lesson, LessonStatus, Mode, PlanItem, Settings, Student } from "@/lib/types";
 import { useDialogs, type LessonTarget } from "./dialog-host";
 import { Dialog } from "./dialog";
 import { DurationSelect, Field, Group, Segmented } from "./fields";
@@ -20,24 +20,24 @@ import { PlanEditor } from "./plan-editor";
 
 type Props = LessonTarget & { onClose: () => void };
 
-/** Waits for the lesson (when editing) and the students, so the form starts with the right values. */
+/** Waits for the lesson (when editing), the students and the saved settings, so the form starts with the right values. */
 export function LessonDialog(props: Props) {
   const students = useStudents();
+  const settings = useLoadedSettings();
   const lesson = useLiveQuery(async () => (props.id ? ((await db.lessons.get(props.id)) ?? null) : null), [props.id]);
-  if (students === undefined || lesson === undefined) return null;
+  if (students === undefined || settings === undefined || lesson === undefined) return null;
   if (props.id && !lesson) return null;
-  return <LessonForm {...props} lesson={lesson} students={students} />;
+  return <LessonForm {...props} lesson={lesson} students={students} settings={settings} />;
 }
 
 type Repeat = "none" | "weekly" | "fortnightly";
 
 const zoneOf = (student: Student | undefined) => (student && isValidZone(student.timeZone) ? student.timeZone : deviceZone());
 
-function LessonForm({ onClose, lesson, students, ...target }: Props & { lesson: Lesson | null; students: Student[] }) {
+function LessonForm({ onClose, lesson, students, settings, ...target }: Props & { lesson: Lesson | null; students: Student[]; settings: Settings }) {
   const i18n = useI18n();
   const { t } = i18n;
   const dialogs = useDialogs();
-  const settings = useSettings();
   const lessons = useLessons();
   const blackouts = useBlackouts();
   const active = students.filter((student) => !student.archived || student.id === lesson?.studentId);
@@ -197,13 +197,14 @@ function LessonForm({ onClose, lesson, students, ...target }: Props & { lesson: 
   };
 
   const sendWhatsApp = () => {
-    if (!student || !messages) return;
+    if (!student || !messages || !valid) return;
     const current = formLesson();
     const text = started ? summaryMessage(messages, student, current, nextLesson(lessons, student.id, end), settings.tutorName) : reminderMessage(messages, student, current, settings.tutorName);
     window.open(whatsappLink(student.phone, text), "_blank", "noopener");
   };
 
-  const unfinished = unfinishedTopics({ ...formLesson() });
+  // Only the plan: while the date or time is empty there's no valid start, and formLesson() would throw.
+  const unfinished = unfinishedTopics({ plan });
   const zoneDiffers = student && studentZone !== local;
 
   if (!active.length && !lesson) {
@@ -232,13 +233,13 @@ function LessonForm({ onClose, lesson, students, ...target }: Props & { lesson: 
       footer={
         <>
           {lesson && (
-            <button type="button" className="btn btn-danger spacer" onClick={remove}>
+            <button type="button" className="btn btn-danger spacer btn-collapse" onClick={remove} aria-label={t("common.delete")} title={t("common.delete")}>
               <Trash2 />
-              {t("common.delete")}
+              <span>{t("common.delete")}</span>
             </button>
           )}
           {lesson && student && (
-            <button type="button" className="btn btn-whatsapp" onClick={sendWhatsApp} disabled={!messages}>
+            <button type="button" className="btn btn-whatsapp" onClick={sendWhatsApp} disabled={!messages || !valid}>
               <MessageCircle />
               {started ? t("lesson.sendSummary") : t("lesson.sendReminder")}
             </button>

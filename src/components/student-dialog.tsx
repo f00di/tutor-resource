@@ -5,26 +5,27 @@ import { saveStudent, type StudentDraft } from "@/lib/actions";
 import { CURRICULA } from "@/lib/curricula";
 import { db } from "@/lib/db";
 import { useI18n } from "@/lib/i18n";
-import { useSettings } from "@/lib/settings";
+import { useLoadedSettings } from "@/lib/settings";
 import { deviceZone, GULF_ZONES } from "@/lib/time";
-import type { Lang, Mode, Student, Tone } from "@/lib/types";
+import type { Lang, Mode, Settings, Student, Tone } from "@/lib/types";
 import { useDialogs, type StudentTarget } from "./dialog-host";
 import { Dialog } from "./dialog";
 import { CurrencySelect, Field, Group, MoneyInput, Segmented, TONES, TonePicker, ZoneSelect } from "./fields";
 
 type Props = StudentTarget & { onClose: () => void };
 
+/** Waits for the student (when editing) and the saved settings, so a new student starts with the tutor's usual rate. */
 export function StudentDialog(props: Props) {
   const student = useLiveQuery(async () => (props.id ? ((await db.students.get(props.id)) ?? null) : null), [props.id]);
   const count = useLiveQuery(() => db.students.count(), []);
-  if (student === undefined || count === undefined) return null;
-  return <StudentForm {...props} student={student} count={count} />;
+  const settings = useLoadedSettings();
+  if (student === undefined || count === undefined || settings === undefined) return null;
+  return <StudentForm {...props} student={student} count={count} settings={settings} />;
 }
 
-function StudentForm({ onClose, onSaved, student, count }: Props & { student: Student | null; count: number }) {
+function StudentForm({ onClose, onSaved, student, count, settings }: Props & { student: Student | null; count: number; settings: Settings }) {
   const { t, lang } = useI18n();
   const dialogs = useDialogs();
-  const settings = useSettings();
   const local = deviceZone();
   const [draft, setDraft] = useState<StudentDraft>(() =>
     student

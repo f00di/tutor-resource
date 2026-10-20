@@ -1,9 +1,10 @@
 import { lazy, Suspense } from "react";
 
 import { DialogHost } from "./components/dialog-host";
+import { ErrorBoundary, ErrorNotice } from "./components/error-boundary";
 import { Shell } from "./components/shell";
 import { I18nProvider, type Lang } from "./lib/i18n";
-import { useRoute, type Route } from "./lib/router";
+import { hrefFor, useRoute, type Route } from "./lib/router";
 import { useSettings } from "./lib/settings";
 import { BlackoutsPage } from "./pages/blackouts";
 import { InvoicePage } from "./pages/invoice";
@@ -50,13 +51,19 @@ export function App({ initialLang }: { initialLang: Lang }) {
     <I18nProvider initialLang={initialLang} hour12={settings.hour12}>
       <DialogHost>
         <Shell route={route}>
-          <Page route={route} />
+          {/* A page that fails shows what happened in place of the page; moving to another page starts fresh. */}
+          <ErrorBoundary key={hrefFor(route)} scope="page">
+            <Page route={route} />
+          </ErrorBoundary>
         </Shell>
         {UpdateToast && (
-          <Suspense fallback={null}>
-            <UpdateToast />
-          </Suspense>
+          <ErrorBoundary scope="silent">
+            <Suspense fallback={null}>
+              <UpdateToast />
+            </Suspense>
+          </ErrorBoundary>
         )}
+        <ErrorNotice />
       </DialogHost>
     </I18nProvider>
   );

@@ -144,9 +144,9 @@ export function TodayPage() {
                 <Plus />
                 {t("student.add")}
               </button>
-              <button type="button" className="btn btn-outline" onClick={loadSample} disabled={loadingSample}>
+              <button type="button" className="btn btn-outline" onClick={loadSample} disabled={loadingSample} aria-busy={loadingSample}>
                 <Sparkles />
-                {t("sample.load")}
+                {loadingSample ? t("sample.loading") : t("sample.load")}
               </button>
             </div>
           </div>

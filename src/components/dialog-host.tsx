@@ -1,17 +1,19 @@
 // One place that opens the app's dialogs (lesson, student, note, blackout, package, new invoice),
 // plus "ask" (a question with buttons), "confirm" and short toasts. Any page can open any dialog,
 // and a dialog can open another on top (e.g. "New student" from inside a lesson).
-import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useI18n } from "@/lib/i18n";
 import type { BlackoutDraft } from "@/lib/actions";
 import { BlackoutDialog } from "./blackout-dialog";
 import { Dialog } from "./dialog";
+import { ErrorBoundary } from "./error-boundary";
 import { LessonDialog } from "./lesson-dialog";
 import { NewInvoiceDialog } from "./new-invoice-dialog";
 import { NoteDialog } from "./note-dialog";
 import { PackageDialog } from "./package-dialog";
 import { StudentDialog } from "./student-dialog";
+import { TopLayer } from "./top-layer";
 
 export interface AskOption<T extends string> {
   value: T;
@@ -139,13 +141,38 @@ export function DialogHost({ children }: { children: ReactNode }) {
   return (
     <DialogContext.Provider value={api}>
       {children}
-      {lesson && <LessonDialog key={`lesson-${keys}`} {...lesson} onClose={() => setLesson(null)} />}
-      {note && <NoteDialog key={`note-${keys}`} {...note} onClose={() => setNote(null)} />}
-      {blackout && <BlackoutDialog key={`blackout-${keys}`} {...blackout} onClose={() => setBlackout(null)} />}
-      {invoice && <NewInvoiceDialog key={`invoice-${keys}`} {...invoice} onClose={() => setInvoice(null)} />}
-      {pack && <PackageDialog key={`package-${keys}`} {...pack} onClose={() => setPack(null)} />}
+      {/* Each dialog has its own safety net: if one fails, it says so and the page behind keeps working. */}
+      {lesson && (
+        <ErrorBoundary key={`lesson-${keys}`} scope="dialog" onClose={() => setLesson(null)}>
+          <LessonDialog {...lesson} onClose={() => setLesson(null)} />
+        </ErrorBoundary>
+      )}
+      {note && (
+        <ErrorBoundary key={`note-${keys}`} scope="dialog" onClose={() => setNote(null)}>
+          <NoteDialog {...note} onClose={() => setNote(null)} />
+        </ErrorBoundary>
+      )}
+      {blackout && (
+        <ErrorBoundary key={`blackout-${keys}`} scope="dialog" onClose={() => setBlackout(null)}>
+          <BlackoutDialog {...blackout} onClose={() => setBlackout(null)} />
+        </ErrorBoundary>
+      )}
+      {invoice && (
+        <ErrorBoundary key={`invoice-${keys}`} scope="dialog" onClose={() => setInvoice(null)}>
+          <NewInvoiceDialog {...invoice} onClose={() => setInvoice(null)} />
+        </ErrorBoundary>
+      )}
+      {pack && (
+        <ErrorBoundary key={`package-${keys}`} scope="dialog" onClose={() => setPack(null)}>
+          <PackageDialog {...pack} onClose={() => setPack(null)} />
+        </ErrorBoundary>
+      )}
       {/* After the others, so "New student" opens on top of a lesson. */}
-      {student && <StudentDialog key={`student-${keys}`} {...student} onClose={() => setStudent(null)} />}
+      {student && (
+        <ErrorBoundary key={`student-${keys}`} scope="dialog" onClose={() => setStudent(null)}>
+          <StudentDialog {...student} onClose={() => setStudent(null)} />
+        </ErrorBoundary>
+      )}
       {asking && (
         <Dialog
           size="narrow"
@@ -177,20 +204,7 @@ export function DialogHost({ children }: { children: ReactNode }) {
   );
 }
 
-/** Shown in the top layer (a popover) where the browser supports it, so it's visible above an open dialog. */
+/** Shown in the top layer, so it's visible above an open dialog. */
 function Toast({ text }: { text: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const element = ref.current as (HTMLDivElement & { showPopover?: () => void }) | null;
-    try {
-      element?.showPopover?.();
-    } catch {
-      // Already showing, or no popover support: it's a normal fixed element then.
-    }
-  });
-  return (
-    <div ref={ref} className="toast" role="status" {...({ popover: "manual" } as object)}>
-      {text}
-    </div>
-  );
+  return <TopLayer className="toast">{text}</TopLayer>;
 }

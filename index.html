@@ -11,6 +11,8 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Tutorcat Desk" />
+    <!-- The page colour before the stylesheet loads (same as --background), so opening or reloading never flashes. -->
+    <style>html{background:#fcfcf9}html.dark{background:#151f1b}</style>
     <!-- Before first paint: the saved or system theme, and Arabic (?lang=ar or the remembered choice)
          sets lang/dir so the page never flashes the wrong way round. Mirrors src/lib/theme.ts and i18n.tsx. -->
     <script>

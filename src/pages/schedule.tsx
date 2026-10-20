@@ -5,7 +5,7 @@ import type { DateSelectArg, DatesSetArg, EventClickArg, EventContentArg, EventD
 import arLocale from "@fullcalendar/core/locales/ar";
 import enGbLocale from "@fullcalendar/core/locales/en-gb";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin, { type EventResizeDoneArg } from "@fullcalendar/interaction";
+import interactionPlugin, { type DateClickArg, type EventResizeDoneArg } from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -37,6 +37,9 @@ const savedView = (narrow: boolean) => {
   }
   return narrow ? "timeGridDay" : "timeGridWeek";
 };
+
+/** What FullCalendar passes a formatting function: wall-clock fields in the calendar's zone. */
+type ClockArg = { date: { hour: number; minute: number }; end?: { hour: number; minute: number } };
 
 const zoneOf = (student: Student | undefined) => (student && isValidZone(student.timeZone) ? student.timeZone : deviceZone());
 // Arabic calendar text with Western digits, as in the rest of the app.
@@ -174,10 +177,20 @@ export default function SchedulePage() {
 
   const onResize = (info: EventResizeDoneArg) => void moveFromCalendar(info.event.id, info.event.start, info.event.end, info.revert);
 
+  // A click (or a tap) on an empty slot. Clicks are handled here rather than as a one-slot selection,
+  // which needed a press-and-hold on touch screens and sometimes missed the first click.
+  const onDateClick = (info: DateClickArg) => {
+    const day = dateKey(info.date.getTime(), local);
+    // A day in the month view: a lesson that day at the tutor's usual afternoon time.
+    if (info.view.type === "dayGridMonth") return dialogs.openLesson({ start: combine(day, "16:00", local) });
+    if (info.allDay) return dialogs.openNote({ date: day });
+    dialogs.openLesson({ start: info.date.getTime() });
+  };
+
+  // Dragging across slots: a lesson of that length.
   const onSelect = (info: DateSelectArg) => {
     calendar.current?.getApi().unselect();
     if (info.view.type === "dayGridMonth") {
-      // A day in the month view: a lesson that day at the tutor's usual afternoon time.
       const day = dateKey(info.start.getTime(), local);
       return dialogs.openLesson({ start: combine(day, "16:00", local) });
     }
@@ -226,7 +239,15 @@ export default function SchedulePage() {
     );
   };
 
-  const timeFormat = { hour: "numeric", minute: "2-digit", hour12: settings.hour12, meridiem: settings.hour12 ? "short" : false } as const;
+  // The app's own time format ("6:00 am", or "06:00" with the 24-hour setting) for the hour labels and
+  // the list view, instead of FullCalendar's "6:00am". It hands over the wall-clock time already in the device's zone.
+  const clock = useCallback(
+    (arg: ClockArg) => {
+      const at = ({ hour, minute }: { hour: number; minute: number }) => i18n.time(Date.UTC(2000, 0, 1, hour, minute), "UTC");
+      return arg.end ? t("range.times", { from: at(arg.date), to: at(arg.end) }) : at(arg.date);
+    },
+    [i18n, t]
+  );
   const nowish = timeKey(Math.max(Date.now() - HOUR, combine(dateKey(Date.now(), local), settings.dayStart, local)), local);
   const scrollTo = hours.first && hours.first < nowish ? hours.first : nowish;
   // On each new week or view, open on the earliest lesson (or about now).
@@ -287,8 +308,8 @@ export default function SchedulePage() {
           scrollTime={`${scrollTo}:00`}
           slotDuration="00:30:00"
           snapDuration="00:15:00"
-          slotLabelFormat={timeFormat}
-          eventTimeFormat={timeFormat}
+          slotLabelFormat={clock}
+          eventTimeFormat={clock}
           allDayText={t("schedule.notesRow")}
           noEventsText={t("schedule.noEvents")}
           nowIndicator
@@ -296,6 +317,7 @@ export default function SchedulePage() {
           eventInteractive
           selectable
           selectMirror
+          selectMinDistance={5}
           dayMaxEvents
           longPressDelay={350}
           eventDurationEditable
@@ -304,6 +326,7 @@ export default function SchedulePage() {
           eventContent={content}
           eventDrop={onDrop}
           eventResize={onResize}
+          dateClick={onDateClick}
           select={onSelect}
           eventClick={onClick}
           datesSet={onDates}
