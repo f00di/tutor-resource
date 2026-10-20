@@ -1,12 +1,13 @@
 # Tutorcat Desk (tutor-resource)
 
-Tools for tutors listed on Tutorcat (https://f00di.github.io/tutorcat/, repo `tutorcat`): a schedule they can drag around, blackout times, lesson notes and invoices. An installable web app (PWA): tutors open it in Chrome, Edge or Safari on Windows or macOS (or a phone) and install it, and it then works offline in its own window. **Local-first: every record stays in that browser's IndexedDB. There is no server, account or analytics.** Deployed to GitHub Pages at https://f00di.github.io/tutor-resource/.
+Tools for tutors listed on Tutorcat (https://f00di.github.io/tutorcat/, repo `tutorcat`): a schedule they can drag around, blackout times, lesson notes and invoices. An installable web app (PWA): tutors open it in Chrome, Edge or Safari on Windows or macOS (or a phone) and install it, and it then works offline in its own window. **Local-first: every record stays in that browser's IndexedDB. There is no server, account or analytics.** Deployed to GitHub Pages at https://f00di.github.io/tutor-resource/ (one-time setting: Settings → Pages → Source: GitHub Actions). **Unlisted**: tutors get the link from Tutorcat; `docs/hosting.md` covers hosting and the private-repo option.
 
 ## Working rules
 - One Claude Code session at a time on this repo; one branch per topic, merged before the next.
 - No commit, push or deploy until the owner says so. Pushing `main` deploys (`.github/workflows/deploy-pages.yml`).
 - Nothing the tutor types may leave the device. Never add a fetch to an outside service, analytics, error tracking or fonts from a CDN. `npm run test:build` checks the built code for that. WhatsApp only opens through `wa.me` links that the tutor clicks.
 - Data about students is about minors: no sample or test data with real names or numbers.
+- Keep it unlisted: the `noindex, nofollow` robots meta in `index.html`, `public/robots.txt` (`Disallow: /`), no sitemap. `npm run test:build` checks all three.
 
 ## Stack and commands
 - React 19 + Vite 8 + Tailwind v4 + TypeScript. Dexie (IndexedDB) + `dexie-react-hooks` for live data. FullCalendar 6 (MIT plugins only: timegrid, daygrid, list, interaction) on the Schedule page, which is lazy-loaded. `vite-plugin-pwa` (Workbox) for the manifest and service worker (`registerType: "prompt"`: updates wait for the tutor to click Reload).
@@ -21,6 +22,7 @@ Tools for tutors listed on Tutorcat (https://f00di.github.io/tutorcat/, repo `tu
 - `src/lib/blackouts.ts`: one shape for weekly, dated and dated-with-times blackouts, in the tutor's local time. `PRESETS`: Friday prayer, plus Ramadan and Eid dates that are **estimates** (moon sighting) and are labelled that way in the app. Add each new year's dates there.
 - `src/lib/messages.ts`: WhatsApp texts in the family's language (`Student.messageLang`). The lesson summary never includes the private note.
 - `src/lib/backup.ts`: one JSON file with everything. Restoring replaces all data. Dashboard reminder after 14 days without a backup.
+- `src/components/first-run.tsx`: the welcome screen before the app, shown once per browser (`localStorage["tutorcat-desk.welcomed"]`, so "Delete everything" doesn't bring it back): free for tutors listed on Tutorcat (link to its For tutors page), data stays on this device, sample data.
 - `src/lib/sample.ts`: "Try it with sample data". Every sample record has `sample: true`, and removing the samples also deletes anything made for sample students.
 - Components: `dialog-host.tsx` opens every dialog (plus `ask`/`confirm`/`toast`); dialogs are native `<dialog>`. `invoice-paper.tsx` is the invoice as printed (Tutorcat's example-invoice layout); the invoice page portals a copy into `.print-root` for `window.print()` (Save as PDF).
 
