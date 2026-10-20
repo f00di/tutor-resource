@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Modern Standard Arabic for Gulf tutors and families, using Tutorcat's glossary (tutorcat/docs/i18n-glossary.md). Not yet reviewed by a native speaker; start with lowConfidence.",
-    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "paper.billTo", "paper.forStudent", "today.afternoon", "msg.summaryIntro", "schedule.dragHint"]
+    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "paper.billTo", "paper.forStudent", "today.afternoon", "msg.summaryIntro", "schedule.dragHint", "nav.forward", "error.updateBody"]
   },
 
   "common.close": "إغلاق",
@@ -28,6 +28,10 @@
   "nav.invoices": "الفواتير",
   "nav.invoicesShort": "الفواتير",
   "nav.settings": "الإعدادات",
+  "nav.back": "رجوع",
+  "nav.forward": "للأمام",
+  "nav.backHint": "رجوع ({keys})",
+  "nav.forwardHint": "للأمام ({keys})",
 
   "theme.light": "التبديل إلى الوضع الفاتح",
   "theme.dark": "التبديل إلى الوضع الداكن",
@@ -38,6 +42,18 @@
   "update.ready": "إصدار جديد من Tutorcat Desk جاهز.",
   "update.reload": "إعادة التحميل",
   "update.later": "لاحقًا",
+
+  "error.appTitle": "حدثت مشكلة في Tutorcat Desk",
+  "error.pageTitle": "حدثت مشكلة في هذه الصفحة",
+  "error.dialogTitle": "حدثت مشكلة في هذه النافذة",
+  "error.body": "بياناتك المحفوظة آمنة على هذا الجهاز. أعد تحميل التطبيق، أو انتقل إلى «اليوم» وتابع.",
+  "error.dialogBody": "بياناتك المحفوظة آمنة. أغلق هذه النافذة وحاول مرة أخرى، أو أعد تحميل التطبيق.",
+  "error.updateBody": "تم تحديث جزء من التطبيق أثناء فتحه. أعد التحميل لإكمال التحديث.",
+  "error.notice": "حدث خطأ، وربما لم يكتمل الإجراء الأخير.",
+  "error.goToday": "الانتقال إلى «اليوم»",
+  "error.copy": "نسخ تفاصيل الخطأ",
+  "error.copied": "تم النسخ",
+  "error.copyHint": "ينسخ وصف المشكلة إلى الحافظة لتلصقه في رسالة. لا يُرسَل أي شيء إلى أي مكان.",
 
   "zone.gulf": "الخليج",
   "zone.all": "كل المناطق الزمنية",
@@ -424,6 +440,7 @@
   "welcome.step4": "بعد كل درس، دوّن ما تمت تغطيته. تُنشأ الفواتير تلقائيًا من دروسك.",
 
   "sample.load": "جرّب ببيانات تجريبية",
+  "sample.loading": "جارٍ إضافة البيانات التجريبية…",
   "sample.loaded": "تمت إضافة البيانات التجريبية",
   "sample.showing": "تعرض الآن بيانات تجريبية (\u2068Sara A.\u2069 و\u2068Omar K.\u2069).",
   "sample.remove": "إزالة البيانات التجريبية",

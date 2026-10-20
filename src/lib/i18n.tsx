@@ -4,6 +4,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import en from "../../i18n/en.json";
+import { reportError } from "./errors";
 import type { CurrencyCode, Lang } from "./types";
 import { formatMoney } from "./money";
 
@@ -139,10 +140,11 @@ export function I18nProvider({ initialLang, hour12, children }: { initialLang: L
   const [state, setState] = useState(() => ({ lang: initialLang, catalog: catalogs[initialLang] ?? en }));
 
   const setLang = useCallback((next: Lang) => {
+    // If the Arabic file can't load (e.g. a new version replaced it), the app says so instead of doing nothing.
     void loadCatalog(next).then((catalog) => {
       setState({ lang: next, catalog });
       applyDocumentLang(next, true);
-    });
+    }, reportError);
   }, []);
 
   useEffect(() => applyDocumentLang(state.lang), [state.lang]);
@@ -157,13 +159,21 @@ export function useI18n() {
   return value;
 }
 
+/** For the error screens, which may draw outside <I18nProvider>: the page's language, as far as it's loaded. */
+export function useAnyTranslator(): Translator {
+  const value = useContext(I18nContext);
+  if (value) return value;
+  const lang: Lang = document.documentElement.lang === "ar" ? "ar" : "en";
+  return createTranslator(lang);
+}
+
 /** A translator for another language than the app's (an invoice or a message in the family's language). */
 export function useTranslator(lang: Lang): Translator | null {
   const { hour12 } = useI18n();
   const [loaded, setLoaded] = useState<{ lang: Lang; catalog: Catalog } | null>(() => (catalogs[lang] ? { lang, catalog: catalogs[lang]! } : null));
   useEffect(() => {
     let live = true;
-    void loadCatalog(lang).then((catalog) => live && setLoaded({ lang, catalog }));
+    void loadCatalog(lang).then((catalog) => live && setLoaded({ lang, catalog }), reportError);
     return () => {
       live = false;
     };

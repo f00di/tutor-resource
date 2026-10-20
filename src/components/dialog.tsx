@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useEffect, useId, useRef, type FormEvent, type ReactNode } from "react";
 
 import { useI18n } from "@/lib/i18n";
+import { DIALOG_OPENED } from "./top-layer";
 
 type Props = {
   title: ReactNode;
@@ -27,7 +28,13 @@ export function Dialog({ title, description, onClose, onSubmit, footer, size, ch
 
   useEffect(() => {
     const dialog = ref.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (dialog && !dialog.open) {
+      // A question over another dialog keeps that dialog's dimming instead of adding a second layer
+      // (two dark backdrops made the screen go almost black).
+      if (document.querySelector("dialog[open]")) dialog.dataset["stacked"] = "";
+      dialog.showModal();
+      window.dispatchEvent(new Event(DIALOG_OPENED));
+    }
     return () => {
       if (dialog?.open) dialog.close();
     };

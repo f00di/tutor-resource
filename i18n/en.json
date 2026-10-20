@@ -23,6 +23,10 @@
   "nav.invoices": "Invoices",
   "nav.invoicesShort": "Invoices",
   "nav.settings": "Settings",
+  "nav.back": "Back",
+  "nav.forward": "Forward",
+  "nav.backHint": "Back ({keys})",
+  "nav.forwardHint": "Forward ({keys})",
 
   "theme.light": "Switch to light mode",
   "theme.dark": "Switch to dark mode",
@@ -33,6 +37,18 @@
   "update.ready": "A new version of Tutorcat Desk is ready.",
   "update.reload": "Reload",
   "update.later": "Later",
+
+  "error.appTitle": "Tutorcat Desk hit a problem",
+  "error.pageTitle": "This page hit a problem",
+  "error.dialogTitle": "This window hit a problem",
+  "error.body": "Your saved data is safe on this device. Reload the app, or go to Today and carry on.",
+  "error.dialogBody": "Your saved data is safe. Close this and try again, or reload the app.",
+  "error.updateBody": "Part of the app was updated while it was open. Reload to finish updating.",
+  "error.notice": "Something went wrong, so the last action may not have finished.",
+  "error.goToday": "Go to Today",
+  "error.copy": "Copy error details",
+  "error.copied": "Copied",
+  "error.copyHint": "Copies what went wrong to your clipboard, to paste in a message. Nothing is sent anywhere.",
 
   "zone.gulf": "Gulf",
   "zone.all": "All time zones",
@@ -419,6 +435,7 @@
   "welcome.step4": "After each lesson, note what you covered. Invoices build themselves from your lessons.",
 
   "sample.load": "Try it with sample data",
+  "sample.loading": "Adding sample data…",
   "sample.loaded": "Sample data added",
   "sample.showing": "You're looking at sample data (Sara A. and Omar K.).",
   "sample.remove": "Remove sample data",
