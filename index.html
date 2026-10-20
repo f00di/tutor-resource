@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tutorcat Desk</title>
+    <meta name="description" content="Schedule, blackout times, lesson notes and invoices for tutors. Everything stays on your device." />
+    <meta name="theme-color" content="#fcfcf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151f1b" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Tutorcat Desk" />
+    <!-- Before first paint: the saved or system theme, and Arabic (?lang=ar or the remembered choice)
+         sets lang/dir so the page never flashes the wrong way round. Mirrors src/lib/theme.ts and i18n.tsx. -->
+    <script>
+      (function () {
+        var d = document.documentElement, t, l;
+        try { t = localStorage.getItem("tutorcat-desk.theme"); } catch (e) {}
+        if (t !== "light" && t !== "dark") t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (t === "dark") d.classList.add("dark");
+        d.style.colorScheme = t;
+        l = new URLSearchParams(location.search).get("lang");
+        try { l = l || localStorage.getItem("tutorcat-desk.lang"); } catch (e) {}
+        if (l === "ar") { d.lang = "ar"; d.dir = "rtl"; }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"><div class="boot-screen" aria-hidden="true"></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
