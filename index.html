@@ -3,20 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Tutorcat Desk</title>
-    <meta name="description" content="Schedule, blackout times, lesson notes and invoices for tutors. Everything stays on your device." />
-    <!-- Unlisted: for tutors on Tutorcat, who get the link from Tutorcat. Search engines are asked not to index it (also public/robots.txt; no sitemap). -->
+    <title>Tutorcat Desk: tools for tutors on Tutorcat</title>
+    <meta name="description" content="A schedule you can drag, blackout times, lesson notes and invoices for tutors on Tutorcat, in English and Arabic. Sign up with the same details as a Tutorcat listing." />
+    <!-- Unlisted, like the app: tutors get the link from Tutorcat (also public/robots.txt; no sitemap). -->
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#fcfcf9" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#151f1b" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Tutorcat Desk" />
-    <!-- The page colour before the stylesheet loads (same as --background), so opening or reloading never flashes. -->
+    <!-- The page colour before the stylesheet loads (same as --background), so it never flashes. -->
     <style>html{background:#fcfcf9}html.dark{background:#151f1b}</style>
-    <!-- Before first paint: the saved or system theme, and Arabic (?lang=ar or the remembered choice)
-         sets lang/dir so the page never flashes the wrong way round. Mirrors src/lib/theme.ts and i18n.tsx. -->
+    <!-- Before first paint: the saved or system theme and language, shared with the app (app/index.html). -->
     <script>
       (function () {
         var d = document.documentElement, t, l;
@@ -32,6 +29,6 @@
   </head>
   <body>
     <div id="root"><div class="boot-screen" aria-hidden="true"></div></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/landing/main.tsx"></script>
   </body>
 </html>
