@@ -6,6 +6,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 import { App } from "@/App";
 import { ErrorBoundary, ErrorNotice } from "@/components/error-boundary";
+import { WELCOMED_STORAGE_KEY } from "@/components/first-run";
 import { DATA_TABLES, db } from "@/lib/db";
 import { dismissReportedError, isChunkError, listenForErrors, reportError } from "@/lib/errors";
 import { I18nProvider } from "@/lib/i18n";
@@ -132,6 +133,7 @@ describe("error boundary", () => {
 
 describe("the lesson dialog with no students", () => {
   it("asks for a student first instead of crashing (the blank-window bug)", async () => {
+    window.localStorage.setItem(WELCOMED_STORAGE_KEY, "1");
     render(<App initialLang="en" />);
     const add = await screen.findAllByRole("button", { name: "Add lesson" });
     await act(async () => fireEvent.click(add[0]!));
