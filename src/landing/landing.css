@@ -132,6 +132,10 @@
 .site-ready-actions, .site-ready-more { display: flex; flex-wrap: wrap; gap: 10px; }
 .site-ready-actions { margin-top: 6px; }
 .site-ready-to { font-size: 13px; }
+/* Appears once the tutor has opened their sign-up in WhatsApp. */
+.site-download { display: grid; gap: 10px; justify-items: start; width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); }
+.site-download h4 { font-size: 17px; margin: 0; }
+.site-ready .site-download-hint { font-size: 13px; }
 .site-ready-text { width: 100%; }
 .site-ready-text summary { font-size: 13px; font-weight: 600; color: var(--primary); padding-block: 6px; }
 .site-ready-text pre { margin: 8px 0 0; padding: 14px; max-height: 280px; overflow: auto; border-radius: 8px; background: var(--muted); font-family: var(--font-body); font-size: 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }

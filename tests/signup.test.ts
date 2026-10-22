@@ -45,6 +45,7 @@ describe("sign-up message", () => {
       "Session mode: Online",
       "Maths tutor for IGCSE and A-Level.",
       "Photo display consent: No",
+      "By sending this, I agree to have these details shown on Tutorcat.",
       "Submitted date: 2026-10-20T10:00:00.000Z",
       "Site language: English",
     ]) {

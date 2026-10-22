@@ -1,10 +1,14 @@
-import { ArrowRight, Check, Copy, Mail, MessageCircle, Pencil } from "lucide-react";
+import { ArrowRight, Check, Copy, Download, Mail, MessageCircle, Pencil } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 
 import { CONTACT_EMAIL, CONTACT_WHATSAPP, TUTORCAT_PRIVACY_URL } from "@/config";
 import { useI18n } from "@/lib/i18n";
+import { installHint } from "@/lib/install";
 import { COUNTRIES, placeLabel } from "./places";
 import { mailtoHref, plainText, signupMessage, whatsappHref, type Signup } from "./signup";
+
+/** The app, next to this page (app/index.html). It installs from there; this page offers no install itself. */
+const APP_URL = `${import.meta.env.BASE_URL}app/`;
 
 const Field = ({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) => (
   <label className={`field${wide ? " site-wide" : ""}`}>
@@ -16,6 +20,8 @@ const Field = ({ label, children, wide = false }: { label: string; children: Rea
 /**
  * The same questions as Tutorcat's tutor application. Pressing the button builds the message; the
  * tutor then sends it by email or WhatsApp themselves (or copies it). Nothing is sent from the page.
+ * Once they've opened it in WhatsApp, the download button appears, with a reminder that sending it
+ * means agreeing to have their details shown on Tutorcat.
  */
 export function SignupForm() {
   const { t, lang } = useI18n();
@@ -24,6 +30,9 @@ export function SignupForm() {
   const [status, setStatus] = useState("");
   const [ready, setReady] = useState<Signup | null>(null);
   const [copied, setCopied] = useState(false);
+  // The page can't see whether they pressed send in WhatsApp, only that they opened it. Kept for this
+  // visit only (the page stores nothing), and kept through "Edit my details".
+  const [openedWhatsApp, setOpenedWhatsApp] = useState(false);
   const region = COUNTRIES.find((item) => item.name === country);
   const showPlace = country === "Other" || city === "Other";
 
@@ -199,7 +208,7 @@ export function SignupForm() {
               <Mail />
               {t("site.ready.email")}
             </a>
-            <a className="btn btn-whatsapp site-btn-lg" href={whatsappHref(ready)} target="_blank" rel="noopener noreferrer">
+            <a className="btn btn-whatsapp site-btn-lg" href={whatsappHref(ready)} target="_blank" rel="noopener noreferrer" onClick={() => setOpenedWhatsApp(true)}>
               <MessageCircle />
               {t("site.ready.whatsapp")}
             </a>
@@ -208,6 +217,19 @@ export function SignupForm() {
             {/* The number is forced left-to-right, or Arabic text shows its digit groups in reverse. */}
             {t("site.ready.to", { email: CONTACT_EMAIL, whatsapp: `⁦${CONTACT_WHATSAPP}⁩` })}
           </p>
+          {openedWhatsApp && (
+            <div className="site-download">
+              <h4>{t("site.download.title")}</h4>
+              <p>{t("site.download.agree")}</p>
+              <a className="btn btn-primary site-btn-lg" href={APP_URL}>
+                <Download />
+                {t("site.download.button")}
+              </a>
+              <p className="site-download-hint">
+                {t("site.download.opens")} {t(`install.${installHint()}`)}
+              </p>
+            </div>
+          )}
           <details className="site-ready-text">
             <summary>{t("site.ready.preview")}</summary>
             <pre dir="ltr">{plainText(ready)}</pre>

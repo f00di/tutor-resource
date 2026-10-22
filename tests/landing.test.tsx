@@ -28,7 +28,7 @@ describe("information page", () => {
     for (const name of ["A schedule you can drag", "Blackout times", "Lesson plans and notes", "Invoices that build themselves", "Your data stays on your device"]) {
       expect(screen.getByRole("heading", { name })).toBeTruthy();
     }
-    // No link into the app: tutors get it from the Tutorcat team after signing up.
+    // No link into the app until the tutor has sent their sign-up on WhatsApp.
     expect(document.querySelector('a[href*="app/"]')).toBeNull();
   });
 
@@ -60,6 +60,14 @@ describe("information page", () => {
     expect(decodeURIComponent(email)).toContain("City: Doha");
     expect(whatsapp.startsWith("https://wa.me/971563784048?text=")).toBe(true);
     expect(decodeURIComponent(whatsapp)).toContain("Subjects I can teach: SAT Math");
+    expect(decodeURIComponent(whatsapp)).toContain("I agree to have these details shown on Tutorcat.");
+
+    // Email alone doesn't unlock the download; opening the sign-up in WhatsApp does, with the agreement.
+    expect(screen.queryByRole("link", { name: /Download Tutorcat Desk/ })).toBeNull();
+    await act(async () => fireEvent.click(screen.getByRole("link", { name: /Send on WhatsApp/ })));
+    expect(screen.getByRole("heading", { name: "Your download is ready" })).toBeTruthy();
+    expect(screen.getByText(/you agree to have them shown on Tutorcat/)).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Download Tutorcat Desk/ }).getAttribute("href")).toMatch(/\/app\/$/);
 
     // Editing goes back to the same, still-filled form.
     await act(async () => fireEvent.click(screen.getByRole("button", { name: /Edit my details/ })));
