@@ -2,6 +2,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { CheckCircle2, Download, HardDrive, MonitorDown, ShieldCheck, Sparkles, Trash2, Upload } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
+import { BankFields } from "@/components/bank-fields";
 import { useDialogs } from "@/components/dialog-host";
 import { CurrencySelect, DurationSelect, Field, Group, MoneyInput, Segmented } from "@/components/fields";
 import { BackupError, backupCounts, deleteAllData, parseBackup, restoreBackup, saveBackupFile } from "@/lib/backup";
@@ -161,11 +162,21 @@ function SettingsForm({ initial }: { initial: Settings }) {
 
         <section className="card">
           <div className="card-head">
+            <h2>{t("bank.title")}</h2>
+          </div>
+          <p className="card-note" style={{ marginBottom: 14 }}>
+            {t("bank.intro")}
+          </p>
+          <BankFields value={draft} onChange={change} />
+        </section>
+
+        <section className="card">
+          <div className="card-head">
             <h2>{t("settings.invoices")}</h2>
           </div>
           <div className="form">
             <div className="field-row three">
-              <Field label={t("settings.prefix")} hint={t("settings.prefixHint", { example: `${draft.invoicePrefix}${new Date().getFullYear()}-${String(draft.nextInvoiceNumber).padStart(3, "0")}` })}>
+              <Field label={t("settings.prefix")} hint={t("settings.prefixHint", { example: `${draft.invoicePrefix}${draft.nextInvoiceNumber}` })}>
                 <input {...text("invoicePrefix")} dir="ltr" />
               </Field>
               <Field label={t("settings.nextNumber")}>
@@ -183,7 +194,7 @@ function SettingsForm({ initial }: { initial: Settings }) {
                 <input type="number" min={0} max={100} step={0.5} value={draft.taxRate} onChange={(event) => change({ taxRate: Math.max(0, Math.min(100, Number(event.target.value) || 0)) })} />
               </Field>
             </div>
-            <Field label={t("paper.payment")} hint={t("settings.paymentHint")}>
+            <Field label={t("settings.otherPayment")} hint={t("settings.paymentHint")}>
               <textarea {...text("paymentDetails")} rows={3} />
             </Field>
             <Field label={t("settings.footer")} hint={t("settings.footerHint")}>

@@ -5,7 +5,7 @@ import { formatInvoiceNumber } from "./invoices";
 import { byStart, endMs, minutesOf, nextLesson, startMs, unfinishedTopics } from "./lessons";
 import { getSettings, saveSettings } from "./settings";
 import { addDays, dateKey, deviceZone, MINUTE, shiftInZone, todayKey, wallDelta, weeklySeries } from "./time";
-import type { Blackout, DayNote, Invoice, InvoiceItem, Lesson, LessonPackage, Mode, PlanItem, Student } from "./types";
+import type { Blackout, DayNote, Invoice, InvoiceItem, InvoiceSpan, Lesson, LessonPackage, Mode, PlanItem, Student } from "./types";
 
 let askedForPersistence = false;
 const touched = () => {
@@ -202,11 +202,13 @@ export interface NewInvoice {
   packages?: LessonPackage[];
   periodStart?: string | undefined;
   periodEnd?: string | undefined;
+  /** 1 = monthly (one page); 3 or 6 = a cover with each month's total, then a page per month. */
+  span?: InvoiceSpan;
   sample?: boolean;
 }
 
 /** Makes an invoice from lessons and/or packages, numbers it and marks them as invoiced. */
-export async function createInvoice({ student, lessons, packages = [], periodStart, periodEnd, sample }: NewInvoice): Promise<string> {
+export async function createInvoice({ student, lessons, packages = [], periodStart, periodEnd, span = 1, sample }: NewInvoice): Promise<string> {
   touched();
   const settings = await getSettings();
   const id = newId();
@@ -227,12 +229,16 @@ export async function createInvoice({ student, lessons, packages = [], periodSta
   const now = nowIso();
   const invoice: Invoice = {
     id,
-    number: formatInvoiceNumber(settings, settings.nextInvoiceNumber, issueDate),
+    number: formatInvoiceNumber(settings, settings.nextInvoiceNumber),
     studentId: student.id,
     issueDate,
     dueDate: addDays(issueDate, settings.dueDays),
     ...(periodStart ? { periodStart } : {}),
     ...(periodEnd ? { periodEnd } : {}),
+    span,
+    level: student.level.trim() || student.curriculum.trim(),
+    subject: student.subjects.trim(),
+    rate: student.rate,
     currency: packages[0]?.currency ?? student.currency,
     language: student.messageLang,
     billTo: student.parentName.trim() || student.name,

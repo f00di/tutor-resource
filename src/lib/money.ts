@@ -51,6 +51,16 @@ export function formatMoney(minor: number, currency: CurrencyCode, locale: strin
   return formatter.format(minor / factor(currency));
 }
 
+const amountFormatters = new Map<string, Intl.NumberFormat>();
+/** The number without the currency, for the invoice's "AED  240.00" cells: 24000 AED → "240.00", 159000 → "1,590.00". */
+export function formatAmount(minor: number, currency: CurrencyCode, locale: string): string {
+  const digits = decimals(currency);
+  const key = `${locale}|${digits}`;
+  let formatter = amountFormatters.get(key);
+  if (!formatter) amountFormatters.set(key, (formatter = new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits })));
+  return formatter.format(minor / factor(currency));
+}
+
 /** What a lesson costs at an hourly rate, rounded to the minor unit. */
 export const lessonAmount = (ratePerHour: number, minutes: number) => Math.round((ratePerHour * minutes) / 60);
 
