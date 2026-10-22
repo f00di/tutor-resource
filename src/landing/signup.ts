@@ -43,10 +43,11 @@ export function signupMessage(data: FormData, siteLanguage: string, now = new Da
       `Profile picture URL: ${or(field(data, "photoUrl"))}`,
       `LinkedIn/portfolio/profile link: ${or(field(data, "profileLink"))}`,
       `Photo display consent: ${data.get("photoConsent") ? "Yes" : "No"}`,
+      "By sending this, I agree to have these details shown on Tutorcat.",
       `Submitted date: ${now.toISOString()}`,
       `Site language: ${siteLanguage}`,
       "",
-      "Note: Tutorcat should review this sign-up before sending the Tutorcat Desk link or adding any public profile.",
+      "Note: applicants who send this on WhatsApp get the Tutorcat Desk download straight away. Review this sign-up before adding any public profile.",
     ].join("\n"),
   };
 }

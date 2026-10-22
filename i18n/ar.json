@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Modern Standard Arabic for Gulf tutors and families, using Tutorcat's glossary (tutorcat/docs/i18n-glossary.md). Not yet reviewed by a native speaker; start with lowConfidence.",
-    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "today.afternoon", "msg.summaryIntro", "schedule.dragHint", "nav.forward", "error.updateBody", "firstRun.free", "firstRun.apply", "paper.tutoring", "paper.shortDate", "paper.breakdown", "paper.sessionDate", "bank.routingNumber", "invoice.endingWith"]
+    "lowConfidence": ["nav.blackouts", "nav.blackoutsShort", "blackout.add", "status.cancelledCharged", "status.cancelledFree", "lesson.repeatZone", "lesson.theirTime", "student.messageLang", "package.start", "package.intro", "tone.sage", "tone.peach", "today.afternoon", "msg.summaryIntro", "schedule.dragHint", "nav.forward", "error.updateBody", "firstRun.free", "firstRun.apply", "paper.tutoring", "paper.shortDate", "paper.breakdown", "paper.sessionDate", "bank.routingNumber", "invoice.endingWith", "site.download.agree"]
   },
 
   "common.close": "إغلاق",
@@ -663,13 +663,13 @@
   "site.how.title": "ثلاث خطوات للحصول عليه",
   "site.how.s1.title": "أرسل بياناتك",
   "site.how.s1.body": "املأ النموذج أدناه: البيانات نفسها التي يطلبها Tutorcat للإدراج. يفتح بريدك الإلكتروني أو واتساب وكل شيء معبأ.",
-  "site.how.s2.title": "يراجعها فريق Tutorcat",
-  "site.how.s2.body": "نراجع بياناتك، وننشئ ملفك في Tutorcat أو نحدّثه إذا رغبت.",
-  "site.how.s3.title": "احصل على الرابط وثبّت التطبيق",
-  "site.how.s3.body": "نرسل لك رابط Tutorcat Desk عبر البريد الإلكتروني أو واتساب. افتحه وثبّته وأضف أول طالب.",
+  "site.how.s2.title": "نزّل Tutorcat Desk",
+  "site.how.s2.body": "بعد إرسال بياناتك عبر واتساب، يظهر زر التنزيل. ثبّت التطبيق وأضف أول طالب.",
+  "site.how.s3.title": "يراجعها فريق Tutorcat",
+  "site.how.s3.body": "نراجع بياناتك، وننشئ ملفك في Tutorcat أو نحدّثه إذا رغبت.",
   "site.signup.eyebrow": "التسجيل",
   "site.signup.title": "احصل على Tutorcat Desk",
-  "site.signup.body": "هذه هي أسئلة الإدراج في Tutorcat نفسها. عند الانتهاء، اختر طريقة الإرسال: البريد الإلكتروني أو واتساب. لا يُرسل أي شيء حتى تضغط إرسال هناك.",
+  "site.signup.body": "هذه هي أسئلة الإدراج في Tutorcat نفسها. عند الانتهاء، اختر طريقة الإرسال: البريد الإلكتروني أو واتساب. لا يُرسل أي شيء حتى تضغط إرسال هناك. وإذا أرسلتها عبر واتساب، يمكنك تنزيل Tutorcat Desk فورًا.",
   "site.contact.title": "أو تواصل مع فريق Tutorcat مباشرة",
   "site.faq.title": "أسئلة",
   "site.faq.free.q": "هل له تكلفة؟",
@@ -725,19 +725,23 @@
   "site.form.bioPlaceholder": "ملخص موجز عنك يراجعه Tutorcat.",
   "site.form.consent": "أؤكد صحة المعلومات التي قدمتها، وأوافق على أن يتواصل معي Tutorcat بشأن Tutorcat Desk وإدراج ملفي.",
   "site.form.photoConsent": "أوافق على أن يعرض Tutorcat صورتي المرسلة في حال قبول طلبي.",
-  "site.form.listingAgreement": "أفهم أن إرسال هذا النموذج لا يضمن الحصول على Tutorcat Desk أو إدراج ملفي.",
+  "site.form.listingAgreement": "أفهم أن إرسال هذا النموذج لا يضمن إدراج ملفي في Tutorcat.",
   "site.form.needSubject": "أدخل مادة واحدة أو دولة واحدة على الأقل.",
   "site.form.invalid": "يرجى إكمال الحقول المطلوبة.",
   "site.form.submit": "جهّز طلب التسجيل",
   "site.form.note": "بعد ذلك تختار البريد الإلكتروني أو واتساب، ولا يُرسل أي شيء حتى تضغط إرسال هناك. كيف يستخدم Tutorcat بياناتك:",
   "site.form.privacy": "سياسة الخصوصية",
   "site.ready.title": "طلب تسجيلك جاهز للإرسال",
-  "site.ready.body": "اختر طريقة الإرسال. يفتح بريدك الإلكتروني أو واتساب وكل شيء معبأ: راجعه ثم اضغط إرسال.",
+  "site.ready.body": "اختر طريقة الإرسال. يفتح بريدك الإلكتروني أو واتساب وكل شيء معبأ: راجعه ثم اضغط إرسال. أرسله عبر واتساب لتنزيل Tutorcat Desk فورًا.",
   "site.ready.email": "إرسال بالبريد الإلكتروني",
   "site.ready.whatsapp": "إرسال عبر واتساب",
   "site.ready.to": "إلى {email} أو واتساب {whatsapp}.",
   "site.ready.preview": "عرض الرسالة",
   "site.ready.copy": "نسخ البيانات",
   "site.ready.copied": "تم النسخ",
-  "site.ready.edit": "تعديل بياناتي"
+  "site.ready.edit": "تعديل بياناتي",
+  "site.download.title": "التنزيل جاهز",
+  "site.download.agree": "بإرسال بياناتك عبر واتساب، فإنك توافق على عرضها في Tutorcat. يراجعها الفريق قبل نشر ملفك.",
+  "site.download.button": "تنزيل Tutorcat Desk",
+  "site.download.opens": "يفتح في متصفحك وهو جاهز للتثبيت."
 }
