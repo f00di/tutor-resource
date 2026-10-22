@@ -136,6 +136,9 @@ export interface InvoiceItem {
   size?: number;
 }
 
+/** Months an invoice covers: 1 = one month (one page); 3 or 6 = a cover page with each month's total, then a page per month. */
+export type InvoiceSpan = 1 | 3 | 6;
+
 export interface Invoice {
   id: string;
   number: string;
@@ -144,6 +147,13 @@ export interface Invoice {
   dueDate: string;
   periodStart?: string;
   periodEnd?: string;
+  /** Missing on invoices made before cumulative invoices existed: those print as one page. */
+  span?: InvoiceSpan;
+  /** The DETAILS lines: the level ("GCE AS Level") and, on 3- and 6-month invoices, the subject. From the student, editable. */
+  level?: string;
+  subject?: string;
+  /** Minor units: the "Charge per hour" shown on the invoice. */
+  rate?: number;
   currency: CurrencyCode;
   /** The invoice's own language, which can differ from the app's. */
   language: Lang;
@@ -172,6 +182,13 @@ export interface Settings {
   address: string;
   /** VAT or tax registration number, if the tutor has one. */
   taxNumber: string;
+  /** Bank details printed on invoices (only the lines filled in). */
+  beneficiaryName: string;
+  iban: string;
+  accountNumber: string;
+  swiftCode: string;
+  routingNumber: string;
+  /** Any other way families pay, as free text. Added to new invoices. */
   paymentDetails: string;
   invoiceFooter: string;
   invoicePrefix: string;

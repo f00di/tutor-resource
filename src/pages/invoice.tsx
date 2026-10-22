@@ -1,6 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, CheckCircle2, MessageCircle, Plus, Printer, RotateCcw, Trash2, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { useDialogs } from "@/components/dialog-host";
@@ -10,7 +10,7 @@ import { deleteInvoice, updateInvoice } from "@/lib/actions";
 import { db, newId } from "@/lib/db";
 import { useStudents } from "@/lib/hooks";
 import { useI18n, useTranslator } from "@/lib/i18n";
-import { invoiceTotals, itemAmount, isOverdue } from "@/lib/invoices";
+import { chargePerHour, invoiceTotals, itemAmount, isOverdue } from "@/lib/invoices";
 import { invoiceMessage, whatsappLink } from "@/lib/messages";
 import { hrefFor, navigate } from "@/lib/router";
 import { useSettings } from "@/lib/settings";
@@ -113,6 +113,7 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
           </h1>
           <p className="page-sub">
             {draft.studentName} · {i18n.money(totals.total, draft.currency)}
+            {draft.span && ` · ${t(`invoice.span.${draft.span}`)}`}
           </p>
         </div>
         <div className="page-actions">
@@ -156,10 +157,7 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
                   <input type="date" value={draft.dueDate} onChange={(event) => change({ dueDate: event.target.value })} />
                 </Field>
               </div>
-              <div className="field-row three">
-                <Field label={t("paper.billTo")}>
-                  <input value={draft.billTo} onChange={(event) => change({ billTo: event.target.value })} />
-                </Field>
+              <div className="field-row">
                 <Field label={t("lesson.student")}>
                   <input value={draft.studentName} onChange={(event) => change({ studentName: event.target.value })} />
                 </Field>
@@ -168,6 +166,21 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
                     <option value="en">English</option>
                     <option value="ar">العربية</option>
                   </select>
+                </Field>
+              </div>
+              <div className="field-row three">
+                <Field label={t("invoice.level")} hint={t("invoice.levelHint")}>
+                  <input value={draft.level ?? ""} onChange={(event) => change({ level: event.target.value })} />
+                </Field>
+                <Field label={t("invoice.subject")} hint={t("invoice.subjectHint")}>
+                  <input value={draft.subject ?? ""} onChange={(event) => change({ subject: event.target.value })} />
+                </Field>
+                <Field label={t("paper.chargePerHour")} hint={t("invoice.rateHint")}>
+                  <MoneyInput
+                    value={chargePerHour(draft) ?? 0}
+                    currency={draft.currency}
+                    onChange={(minor) => change({ rate: minor, items: draft.items.map((item) => (item.kind === "lesson" ? { ...item, unitPrice: minor } : item)) })}
+                  />
                 </Field>
               </div>
             </div>
@@ -197,16 +210,20 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
                       <td style={{ minWidth: 130 }}>
                         <input className="input" type="date" value={item.date ?? ""} onChange={(event) => changeItem(item.id, { date: event.target.value })} aria-label={t("paper.date")} />
                       </td>
-                      <td style={{ minWidth: 150 }}>
-                        <input
-                          className="input"
-                          value={item.description}
-                          placeholder={item.kind === "lesson" ? t("paper.lesson") : item.kind === "package" ? t("paper.package", { count: item.size ?? 0 }) : ""}
-                          onChange={(event) => changeItem(item.id, { description: event.target.value })}
-                          aria-label={t("paper.description")}
-                        />
+                      <td style={{ minWidth: 120 }}>
+                        {item.kind === "lesson" ? (
+                          <span className="muted small">{t("paper.lesson")}</span>
+                        ) : (
+                          <input
+                            className="input"
+                            value={item.description}
+                            placeholder={item.kind === "package" ? t("paper.package", { count: item.size ?? 0 }) : ""}
+                            onChange={(event) => changeItem(item.id, { description: event.target.value })}
+                            aria-label={t("paper.description")}
+                          />
+                        )}
                       </td>
-                      <td style={{ width: 90 }}>
+                      <td style={{ minWidth: 76 }}>
                         <input
                           className="input"
                           type="number"
@@ -217,7 +234,7 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
                           aria-label={item.kind === "lesson" ? t("invoice.hours") : t("paper.qty")}
                         />
                       </td>
-                      <td style={{ width: 120 }}>
+                      <td style={{ minWidth: 100 }}>
                         <MoneyInput className="input" value={item.unitPrice} currency={draft.currency} onChange={(minor) => changeItem(item.id, { unitPrice: minor })} aria-label={t("paper.rate")} />
                       </td>
                       <td className="num">{i18n.money(itemAmount(item), draft.currency)}</td>
@@ -276,7 +293,7 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
           </section>
           <section className="card">
             <div className="form">
-              <Field label={t("paper.payment")} hint={t("invoice.paymentHint")}>
+              <Field label={t("settings.otherPayment")} hint={t("invoice.paymentHint")}>
                 <textarea value={draft.notes} onChange={(event) => change({ notes: event.target.value })} rows={3} />
               </Field>
               {draft.status === "paid" && (
@@ -300,10 +317,33 @@ function InvoiceEditor({ initial }: { initial: Invoice }) {
           <p className="section-label" style={{ marginBottom: 8 }}>
             {t("invoice.preview")}
           </p>
-          <div className="preview-scale">{paper && <InvoicePaper invoice={draft} settings={settings} tr={paper} />}</div>
+          <div className="preview-scale">
+            <FitWidth width={794}>{paper && <InvoicePaper invoice={draft} settings={settings} tr={paper} preview />}</FitWidth>
+          </div>
         </div>
       </div>
       {paper && createPortal(<div className="print-root">{<InvoicePaper invoice={draft} settings={settings} tr={paper} />}</div>, document.body)}
+    </div>
+  );
+}
+
+/** Shows a fixed-width page (an A4 invoice) zoomed down to the space there is, so the preview matches the print. */
+function FitWidth({ width, children }: { width: number; children: ReactNode }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(1);
+  useLayoutEffect(() => {
+    const element = box.current;
+    if (!element) return;
+    const fit = () => setZoom(Math.min(1, element.clientWidth / width));
+    fit();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [width]);
+  return (
+    <div ref={box} className="preview-fit">
+      <div style={{ width, zoom }}>{children}</div>
     </div>
   );
 }

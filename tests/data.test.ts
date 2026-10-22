@@ -92,7 +92,9 @@ describe("invoices in storage", () => {
 
     const id = await createInvoice({ student, lessons: ready });
     const invoice = (await db.invoices.get(id))!;
-    expect(invoice.number).toMatch(/^TC-\d{4}-007$/);
+    expect(invoice.number).toBe("TC-7");
+    expect(invoice.span).toBe(1);
+    expect([invoice.level, invoice.subject, invoice.rate]).toEqual(["Year 10", "IGCSE Maths", 20000]);
     expect(invoice.items.map((item) => [item.quantity, item.unitPrice])).toEqual([
       [1.5, 20000],
       [1, 20000],
@@ -107,6 +109,18 @@ describe("invoices in storage", () => {
     expect(invoiceableLessons(await db.lessons.toArray(), [], studentId, "2000-01-01", "2100-01-01")).toHaveLength(1);
     await deleteInvoice(id);
     expect(invoiceableLessons(await db.lessons.toArray(), [], studentId, "2000-01-01", "2100-01-01")).toHaveLength(2);
+  });
+
+  it("makes a 3-month invoice covering whole months, numbered like the spreadsheet", async () => {
+    await saveSettings({ nextInvoiceNumber: 2034 });
+    const studentId = await saveStudent({ ...sara, level: "", curriculum: "British (IGCSE/A-Level)" });
+    const student = (await db.students.get(studentId))!;
+    const id = await createInvoice({ student, lessons: [], periodStart: "2026-01-01", periodEnd: "2026-03-31", span: 3 });
+    const invoice = (await db.invoices.get(id))!;
+    expect(invoice.number).toBe("2034");
+    expect(invoice.span).toBe(3);
+    expect(invoice.level).toBe("British (IGCSE/A-Level)");
+    expect((await getSettings()).nextInvoiceNumber).toBe(2035);
   });
 });
 
