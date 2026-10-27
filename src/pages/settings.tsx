@@ -1,11 +1,12 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { CheckCircle2, Download, HardDrive, MonitorDown, ShieldCheck, Sparkles, Trash2, Upload } from "lucide-react";
+import { CheckCircle2, Download, HardDrive, Info, MonitorDown, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import { BankFields } from "@/components/bank-fields";
 import { useDialogs } from "@/components/dialog-host";
 import { CurrencySelect, DurationSelect, Field, Group, MoneyInput, Segmented } from "@/components/fields";
-import { BackupError, backupCounts, deleteAllData, parseBackup, restoreBackup, saveBackupFile } from "@/lib/backup";
+import { RestoreButton } from "@/components/restore-button";
+import { deleteAllData, saveBackupFile } from "@/lib/backup";
 import { db } from "@/lib/db";
 import { useI18n } from "@/lib/i18n";
 import { installHint, useInstall } from "@/lib/install";
@@ -16,6 +17,9 @@ import { isTimeKey } from "@/lib/time";
 import { setThemeChoice, useTheme, type ThemeChoice } from "@/lib/theme";
 import type { Mode, Settings } from "@/lib/types";
 import { usePageTitle } from "./page-title";
+
+/** Where this copy's data lives: each address (and the desktop app) has its own. */
+const copyAddress = () => `${window.location.host}${window.location.pathname}`.replace(/\/$/, "");
 
 export function SettingsPage() {
   const { t } = useI18n();
@@ -38,7 +42,6 @@ function SettingsForm({ initial }: { initial: Settings }) {
   const [sampleBusy, setSampleBusy] = useState(false);
   const pending = useRef<Partial<Settings>>({});
   const timer = useRef<number | undefined>(undefined);
-  const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void navigator.storage?.persisted?.().then(setPersisted, () => setPersisted(null));
@@ -63,28 +66,6 @@ function SettingsForm({ initial }: { initial: Settings }) {
   const backup = async () => {
     flush();
     if (await saveBackupFile()) dialogs.toast(t("backup.saved"));
-  };
-
-  const restore = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      const parsed = parseBackup(await file.text());
-      const counts = backupCounts(parsed);
-      const ok = await dialogs.confirm({
-        title: t("backup.restoreTitle"),
-        body: t("backup.restoreBody", { date: i18n.date(Date.parse(parsed.exportedAt), "medium"), students: counts.students, lessons: counts.lessons, invoices: counts.invoices }),
-        confirmLabel: t("backup.restore"),
-        danger: true,
-      });
-      if (!ok) return;
-      await restoreBackup(parsed);
-      dialogs.toast(t("backup.restored"));
-      navigate({ name: "today" });
-    } catch (error) {
-      dialogs.toast(error instanceof BackupError ? t(`backup.error.${error.reason}`) : t("backup.error.damaged"));
-    } finally {
-      if (fileInput.current) fileInput.current.value = "";
-    }
   };
 
   const loadSample = async () => {
@@ -334,7 +315,7 @@ function SettingsForm({ initial }: { initial: Settings }) {
             <ShieldCheck />
             <span>{t("data.private")}</span>
           </div>
-          <dl className="details" style={{ marginBottom: 14 }}>
+          <dl className="details" style={{ marginBottom: 18 }}>
             <dt>{t("data.stored")}</dt>
             <dd>
               <HardDrive width={13} height={13} style={{ verticalAlign: "-2px", marginInlineEnd: 4 }} />
@@ -342,22 +323,59 @@ function SettingsForm({ initial }: { initial: Settings }) {
               {persisted === true && ` · ${t("data.persisted")}`}
               {persisted === false && ` · ${t("data.notPersisted")}`}
             </dd>
-            <dt>{t("data.lastBackup")}</dt>
-            <dd>{lastBackup ? i18n.date(Date.parse(lastBackup), "medium") : t("data.neverBackedUp")}</dd>
+            <dt>{t("data.thisCopy")}</dt>
+            <dd>
+              <bdi dir="ltr">{copyAddress()}</bdi>
+            </dd>
           </dl>
-          <p className="card-note" style={{ marginBottom: 12 }}>
-            {t("data.backupIntro")}
-          </p>
-          <div className="page-actions">
-            <button type="button" className="btn btn-primary" onClick={backup}>
-              <Download />
-              {t("backup.now")}
-            </button>
-            <button type="button" className="btn btn-outline" onClick={() => fileInput.current?.click()}>
-              <Upload />
-              {t("backup.restoreButton")}
-            </button>
-            <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={(event) => void restore(event.target.files?.[0])} />
+          {/* Updating keeps the data; moving to another laptop, address or the desktop app needs the file. */}
+          <h3 id="data-steps" className="data-steps-title">
+            {t("data.stepsLabel")}
+          </h3>
+          <ol className="data-steps" aria-labelledby="data-steps">
+            <li>
+              <span className="data-step-number" aria-hidden>
+                {i18n.number(1)}
+              </span>
+              <div>
+                <h4>{t("data.step1")}</h4>
+                <p className="card-note">{t("data.step1Body")}</p>
+                <div className="page-actions">
+                  <button type="button" className="btn btn-primary" onClick={backup}>
+                    <Download />
+                    {t("backup.now")}
+                  </button>
+                  <span className="field-hint">
+                    {lastBackup ? t("data.lastBackupOn", { date: i18n.date(Date.parse(lastBackup), "medium") }) : t("data.lastBackupNever")}
+                  </span>
+                </div>
+              </div>
+            </li>
+            <li>
+              <span className="data-step-number" aria-hidden>
+                {i18n.number(2)}
+              </span>
+              <div>
+                <h4>{t("data.step2")}</h4>
+                <p className="card-note">{t("data.step2Body")}</p>
+              </div>
+            </li>
+            <li>
+              <span className="data-step-number" aria-hidden>
+                {i18n.number(3)}
+              </span>
+              <div>
+                <h4>{t("data.step3")}</h4>
+                <p className="card-note">{t("data.step3Body")}</p>
+                <div className="page-actions">
+                  <RestoreButton onRestored={() => navigate({ name: "today" })} />
+                </div>
+              </div>
+            </li>
+          </ol>
+          <div className="notice">
+            <Info />
+            <span>{t("data.separate")}</span>
           </div>
           <hr className="divider" style={{ margin: "18px 0" }} />
           <div className="page-actions">
