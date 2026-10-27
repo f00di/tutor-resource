@@ -1,14 +1,16 @@
 // The first screen on a new device, shown once: who Tutorcat Desk is for, that the data stays on this
-// device, and the sample data. Remembered in localStorage["tutorcat-desk.welcomed"] (like the theme and
+// device, restoring a backup (a new laptop, another address, a reinstall), and the sample data. Remembered in localStorage["tutorcat-desk.welcomed"] (like the theme and
 // language), so "Delete everything" in Settings doesn't bring it back.
 import { ArrowRight, BadgeCheck, ExternalLink, HardDrive, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 import { useI18n } from "@/lib/i18n";
+import { navigate } from "@/lib/router";
 import { loadSampleData } from "@/lib/sample";
 import { usePageTitle } from "@/pages/page-title";
 import { useDialogs } from "./dialog-host";
 import { Logo } from "./logo";
+import { RestoreButton } from "./restore-button";
 import { Tools } from "./shell";
 
 /** Where tutors apply to be listed. A link the tutor clicks; the app never contacts Tutorcat. */
@@ -101,11 +103,18 @@ export function FirstRun({ onDone }: { onDone: () => void }) {
               {t("firstRun.start")}
               <ArrowRight className="dir-icon" />
             </button>
+            <RestoreButton
+              onRestored={() => {
+                navigate({ name: "today" });
+                finish();
+              }}
+            />
             <button type="button" className="btn btn-outline" onClick={trySample} disabled={loadingSample} aria-busy={loadingSample}>
               <Sparkles />
               {loadingSample ? t("sample.loading") : t("sample.load")}
             </button>
           </div>
+          <p className="first-run-restore">{t("firstRun.restoreHint")}</p>
         </div>
       </main>
     </div>

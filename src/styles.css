@@ -397,6 +397,13 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; flex: n
 .toast .btn { height: 30px; }
 /* Problems sit at the top, clear of the "Saved" toast at the bottom. */
 .toast-error { bottom: auto; top: 20px; flex-wrap: wrap; }
+/* The update prompt: two lines of text, then its three buttons. */
+.toast-update { flex-direction: column; align-items: stretch; gap: 10px; }
+.toast-text { display: grid; gap: 2px; line-height: 1.5; }
+.toast-text span { opacity: .8; }
+.toast-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.toast .btn-outline { background: transparent; color: inherit; border-color: color-mix(in oklch, currentColor 45%, transparent); }
+.toast .btn-outline:hover { background: color-mix(in oklch, currentColor 12%, transparent); }
 
 /* When a page or the whole app fails (components/error-boundary.tsx). */
 .error-screen { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--background); }
@@ -433,6 +440,7 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; flex: n
 .first-run-points a svg { width: 13px; height: 13px; margin-inline-start: 4px; vertical-align: -1px; }
 .first-run-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 .first-run-actions .btn { height: 44px; padding-inline: 20px; font-size: 14px; }
+.first-run-restore { margin: 14px 0 0; color: var(--muted-foreground); font-size: 13px; line-height: 1.6; }
 /* Phones: the page is the card, and the buttons are full width (thumb reach). */
 @media (max-width: 640px) {
   .first-run-bar { padding-inline: 16px; }
@@ -444,6 +452,17 @@ input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; flex: n
 
 .settings-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .settings-grid { display: grid; gap: 16px; max-width: 760px; }
+/* Settings → Your data: back up, update or install, restore. */
+.data-steps { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 0; border-top: 1px solid var(--border); }
+.data-steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.data-step-number { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--secondary); color: var(--primary); font-size: 13px; font-weight: 700; }
+.data-steps-title { margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+.data-steps h4 { font-size: 14px; font-weight: 700; line-height: 28px; }
+.data-steps .card-note { margin-top: 2px; }
+.data-steps .page-actions { margin-top: 10px; align-items: center; }
+.data-steps .field-hint { margin: 0; }
+.restore-summary { margin: 0 0 12px; }
+.restore-note { margin: 0; }
 
 /* Laptops and tablets in landscape keep the sidebar; below 900px it becomes a top bar + bottom tabs. */
 @media (max-width: 1040px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
